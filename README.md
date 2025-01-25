@@ -1,1 +1,5 @@
 This Python program simulates an interactive AI companion named Cozmo, designed to engage users with a variety of fun and informative features. Cozmo can display different facial expressions (happy, sad, surprised, or neutral) based on user input, making the interaction more dynamic. The user can also ask Cozmo math questions, and Cozmo will respond with the correct answer or guide the user through solving the problem. Additionally, Cozmo can answer basic predefined questions like "What is 2 + 2?" or "Who are you?". If the user needs more assistance, Cozmo provides a help option listing all available commands. One of the most exciting features of this program is its ability to query ChatGPT for answers to user-submitted questions. By using the OpenAI API, Cozmo can ask ChatGPT anything, providing a unique way for users to interact with an advanced AI. The program runs in a loop, allowing users to keep interacting until they choose to quit, creating an engaging and educational experience.
+
+
+
+It only supports Arch Linux right now.
