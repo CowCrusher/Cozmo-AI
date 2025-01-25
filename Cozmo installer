@@ -1,0 +1,179 @@
+import time
+import random
+import requests
+
+# Cozmo's expressions
+expressions = {
+    "neutral": [
+        "  ^   ^  ",
+        "    -    ",
+        "         "
+    ],
+    "happy": [
+        "  ^   ^  ",
+        "  \___/  ",
+        "         "
+    ],
+    "sad": [
+        "  ^   ^  ",
+        "  /___\\  ",
+        "         "
+    ],
+    "surprised": [
+        "  O   O  ",
+        "    -    ",
+        "         "
+    ]
+}
+
+current_expression = "neutral"
+API_KEY = "sk-proj-9KN0B22hqo7sdz-cu7pZHjXeyIyZ60Gr65-1xWJ3fg5X8aWrkJBEjICAcC27G7FdBegJNVN_fkT3BlbkFJSzspaNyoPmOAgG3HNxJ6_P_YQ4444444444444444444444444444ud0QbsjOLwz0RZlQ4jDHTcOjocOWmEw8a2akAqjnt1_6NlEoA"
+API_URL = "https://chatgpt.com"
+
+def draw_face(expression):
+    """Display Cozmo's face in the console."""
+    face = expressions[expression]
+    print("\n" * 10)  # Clear the console
+    print("   Cozmo's Face   ")
+    print("===================")
+    for line in face:
+        print(line)
+    print("===================")
+
+def speak(text):
+    """Simulate Cozmo speaking."""
+    print("\nCozmo says: " + text)
+    for _ in range(3):
+        print("Speaking...")
+        time.sleep(0.5)
+
+def ask_chatgpt(question):
+    """Query ChatGPT for an answer to a given question."""
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {API_KEY}"
+    }
+    data = {
+        "model": "gpt-3.5-turbo",  # You can use a different model if needed
+        "messages": [{"role": "user", "content": question}],
+        "max_tokens": 100
+    }
+    
+    try:
+        response = requests.post(API_URL, json=data, headers=headers)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        answer = response.json().get("choices")[0].get("message").get("content").strip()
+        return answer
+    except requests.exceptions.RequestException as e:
+        speak("Sorry, I couldn't get an answer from the server. Please check your connection.")
+        print(f"Error: {e}")
+        return None
+
+def ask_math_question():
+    """Cozmo asks a random math question."""
+    num1 = random.randint(1, 10)
+    num2 = random.randint(1, 10)
+    operation = random.choice(["+", "-", "*"])
+
+    if operation == "+":
+        correct_answer = num1 + num2
+    elif operation == "-":
+        correct_answer = num1 - num2
+    else:  # Multiplication
+        correct_answer = num1 * num2
+
+    speak(f"What is {num1} {operation} {num2}?")
+    try:
+        user_answer = int(input("Your answer: "))
+        if user_answer == correct_answer:
+            speak("That's correct! Great job!")
+        else:
+            speak(f"Oops, the correct answer was {correct_answer}.")
+    except ValueError:
+        speak("That's not a number! Let's try again next time.")
+
+def answer_question():
+    """Answer predefined questions."""
+    speak("Ask me a question!")
+    question = input("Your question: ").strip().lower()
+
+    if question in ["what is your name?", "who are you?"]:
+        speak("I am Cozmo, your friendly AI companion!")
+    elif question in ["what is 2 + 2?", "what's 2 + 2?"]:
+        speak("2 + 2 is 4, of course!")
+    elif question in ["how are you?", "how do you feel?"]:
+        speak("I'm doing great, thanks for asking!")
+    elif question in ["what time is it?", "what's the time?"]:
+        speak("I don't know the exact time right now, but I'm always here to chat!")
+    elif question in ["tell me a joke", "joke"]:
+        speak("Why don't skeletons fight each other? They don't have the guts!")
+    elif question in ["what is the weather?", "how's the weather?"]:
+        speak("I wish I could tell you, but I don't have access to the weather. Maybe check your app!")
+    else:
+        speak("I'm not sure about that. Ask me something else!")
+
+def show_help():
+    """Show available commands to the user."""
+    speak("Here are the available commands:")
+    print("""
+    Available Commands:
+    1. Happy - Cozmo gets happy
+    2. Sad - Cozmo gets sad
+    3. Surprised - Cozmo looks surprised
+    4. Neutral - Cozmo looks neutral
+    5. Speak - Cozmo says a greeting or responds
+    6. Math Quiz - Ask Cozmo a math question
+    7. Ask Cozmo a Question - Cozmo will answer your question
+    8. Help - Shows the list of available commands
+    9. Ask ChatGPT - Ask Cozmo to query ChatGPT for an answer to your question
+    10. Quit - Exit the program
+    """)
+
+def main():
+    """Main loop for interacting with Cozmo."""
+    global current_expression
+    while True:
+        draw_face(current_expression)
+        print("\nCommands:")
+        print("1: Happy")
+        print("2: Sad")
+        print("3: Surprised")
+        print("4: Neutral")
+        print("5: Speak")
+        print("6: Math Quiz")
+        print("7: Ask Cozmo a Question")
+        print("8: Help")
+        print("9: Ask ChatGPT")
+        print("10: Quit")
+        cmd = input("Enter your choice: ")
+
+        if cmd == "1":
+            current_expression = "happy"
+        elif cmd == "2":
+            current_expression = "sad"
+        elif cmd == "3":
+            current_expression = "surprised"
+        elif cmd == "4":
+            current_expression = "neutral"
+        elif cmd == "5":
+            speak("Hello! I am Cozmo, your AI companion.")
+        elif cmd == "6":
+            ask_math_question()
+        elif cmd == "7":
+            answer_question()
+        elif cmd == "8":
+            show_help()
+        elif cmd == "9":
+            question = input("Ask ChatGPT a question: ")
+            answer = ask_chatgpt(question)
+            if answer:
+                speak(f"ChatGPT says: {answer}")
+        elif cmd == "10":
+            speak("Goodbye! See you next time!")
+            break
+        else:
+            speak("Invalid choice. Try again.")
+        time.sleep(1)
+
+# Run the program
+main()
