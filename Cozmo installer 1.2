@@ -1,0 +1,314 @@
+So first thanks for choseing cozmo AI the terminal conpanion
+1. sudo pacman -Syu python
+2. sudo pacman -S nano
+3. nano cozmo.py
+3. paste cozmo into file
+4. ctrl x
+5. y enter  
+6. now cozmo is installed
+7. To start him "Python cosmo.py"enter
+
+To use chat gpt you need your own API
+1. get API
+2. nano cosmo.py
+3. find API holder
+4. enter API
+5. ctrl x
+6. y enter
+7. then make sure he gets to the chatgpt server if not try again if still not working open a new issue.
+
+Have Fun [] [] 
+         \__/
+
+Copy & Paste Cozmo file System
+
+import time
+import random
+import sys
+import os
+import importlib
+
+# Cozmo's original expressions
+expressions = {
+    "neutral": [
+        "  ^   ^  ",
+        "    -    ",
+        "         "
+    ],
+    "happy": [
+        "  ^   ^  ",
+        "  \\___/  ",
+        "         "
+    ],
+    "sad": [
+        "  ^   ^  ",
+        "  /___\\  ",
+        "         "
+    ],
+    "surprised": [
+        "  O   O  ",
+        "    -    ",
+        "         "
+    ],
+    "dead": [
+        "  x   x  ",
+        "  \\___/  ",
+        "   ---   ",
+    ]
+}
+
+current_expression = "neutral"
+is_admin = False
+tools = []  # List to store added tools
+installed_tools_file = "installed_tools.py"
+
+# Check if installed_tools.py exists, if not, create it
+if not os.path.exists(installed_tools_file):
+    with open(installed_tools_file, 'w') as file:
+        file.write("installed_tools = []\n")
+
+# Load the installed tools from the file
+def load_installed_tools():
+    global tools
+    try:
+        with open(installed_tools_file, 'r') as file:
+            exec(file.read())  # This loads the 'installed_tools' list from the file
+    except Exception as e:
+        print(f"Error loading installed tools: {e}")
+
+# Save the installed tools to the file
+def save_installed_tools():
+    with open(installed_tools_file, 'w') as file:
+        file.write(f"installed_tools = {tools}\n")
+
+def draw_face(expression):
+    """Display Cozmo's face in the console."""
+    face = expressions[expression]
+    print("\n" * 10)  # Clear the console
+    print("   Cozmo's Face   ")
+    print("===================")
+    for line in face:
+        print(line)
+    print("===================")
+
+
+def speak(text):
+    """Simulate Cozmo speaking."""
+    print("\nCozmo says: " + text)
+    for _ in range(3):
+        print("Speaking...")
+        time.sleep(0.5)
+
+
+def bugging_screen():
+    """Simulate a bugging screen effect."""
+    for _ in range(10):
+        print("\n" * random.randint(1, 5))
+        print(" ".join(random.choices(["ERROR", "####", "@@@@", "!!!", "&&&"], k=random.randint(5, 20))))
+        time.sleep(0.2)
+
+
+def kill_cozmo():
+    """Simulate killing Cozmo with a dramatic sequence."""
+    speak("Are you sure you want to kill Cozmo? Type 'y' to confirm or anything else to cancel.")
+    confirmation = input("Confirm (y/n): ").strip().lower()
+    if confirmation == "y":
+        speak("Goodbye... friend.")
+        time.sleep(1)
+        bugging_screen()
+        draw_face("dead")
+        print("DIGITAL BLOOD: ****")
+        print("ERROR: Critical system failure!")
+        time.sleep(2)
+        print("Cozmo has crashed...")
+        sys.exit()  # End the program
+    else:
+        speak("Whew! That was close. I'm glad you changed your mind.")
+
+
+def admin_ui():
+    """Cozmic Admin UI for managing tools and features."""
+    while True:
+        print("\n*** Cozmic Admin UI ***")
+        print("1. Add a new tool")
+        print("2. Manage existing tools")
+        print("3. Kill Cozmo")
+        print("4. Return to main menu")
+        print("5. Store (Install packages)")
+        choice = input("Choose an option: ")
+
+        if choice == "1":
+            tool_name = input("Enter the name of the new tool: ").strip()
+            # Add the new tool to the list
+            tools.append(tool_name)
+            speak(f"The tool '{tool_name}' has been added (not implemented yet).")
+        elif choice == "2":
+            if tools:
+                print("\nCurrent Tools:")
+                for i, tool in enumerate(tools, 1):
+                    print(f"{i}. {tool}")
+                tool_to_delete = input("Enter the number of the tool to delete (or press Enter to cancel): ").strip()
+
+                if tool_to_delete:
+                    try:
+                        tool_index = int(tool_to_delete) - 1
+                        if 0 <= tool_index < len(tools):
+                            confirm = input(f"Are you sure you want to delete '{tools[tool_index]}'? Type 'y' to confirm: ").strip().lower()
+                            if confirm == 'y':
+                                deleted_tool = tools.pop(tool_index)
+                                print(f"The tool '{deleted_tool}' has been deleted.")
+                                speak(f"The tool '{deleted_tool}' has been removed from the system.")
+                            else:
+                                print("Tool deletion canceled.")
+                        else:
+                            print("Invalid tool number.")
+                    except ValueError:
+                        print("Invalid input.")
+            else:
+                print("No tools available to manage.")
+        elif choice == "3":
+            kill_cozmo()
+        elif choice == "4":
+            speak("Exiting the admin interface...")
+            break
+        elif choice == "5":
+            store_ui()
+        else:
+            speak("Invalid choice. Please try again.")
+
+# Store to install packages
+def store_ui():
+    """Simulate a store where you can install tools."""
+    available_tools = ["Voice Enhancer", "Enhanced AI", "Bug Fixer"]  # Placeholder tools for installation
+    print("\n*** Cozmo Store ***")
+    print("Available Tools to Install:")
+    for i, tool in enumerate(available_tools, 1):
+        print(f"{i}. {tool}")
+
+    choice = input("Enter the number of the tool to install (or press Enter to cancel): ").strip()
+
+    if choice:
+        try:
+            tool_index = int(choice) - 1
+            if 0 <= tool_index < len(available_tools):
+                tool_name = available_tools[tool_index]
+                # Simulate installing the tool by adding it to the tools list
+                tools.append(tool_name)
+                save_installed_tools()  # Save the tools to file
+                speak(f"Tool '{tool_name}' has been installed.")
+            else:
+                print("Invalid tool number.")
+        except ValueError:
+            print("Invalid input.")
+    else:
+        print("Store purchase canceled.")
+
+
+def answer_question():
+    """Answer predefined questions or activate admin mode."""
+    global is_admin
+    speak("Ask me a question!")
+    question = input("Your question: ").strip().lower()
+
+    if question == "admin":
+        speak("Please enter the admin password:")
+        password = input("Password: ").strip()
+        if password == "1216":
+            is_admin = True
+            speak("Admin mode activated! You now have access to additional features.")
+        else:
+            speak("Incorrect password. Access denied.")
+    elif question in ["what is your name?", "who are you?"]:
+        speak("I am Cozmo, your friendly AI companion!")
+    elif question in ["what is 2 + 2?", "what's 2 + 2?"]:
+        speak("2 + 2 is 4, of course!")
+    else:
+        speak("I'm not sure about that. Ask me something else!")
+
+
+def random_phrase():
+    """Cozmo speaks a random fun phrase."""
+    phrases = [
+        "Hello, human! I’m here to have some fun!",
+        "Beep boop! You’re looking great today!",
+        "I wish I could hug you, but... no arms!",
+        "Error 404: Sadness not found.",
+        "Happiness activated. Let’s go!"
+    ]
+    speak(random.choice(phrases))
+
+
+def display_help():
+    """Display all available commands."""
+    print("\n*** Help Menu ***")
+    print("1: Happy - Change Cozmo's face to happy.")
+    print("2: Sad - Change Cozmo's face to sad.")
+    print("3: Surprised - Change Cozmo's face to surprised.")
+    print("4: Neutral - Change Cozmo's face to neutral.")
+    print("5: Speak - Cozmo says a preset greeting.")
+    print("6: Ask Cozmo a Question - Ask Cozmo anything!")
+    print("7: Quit - Exit the program.")
+    print("8: Random Fun Phrase - Cozmo says something fun.")
+    if is_admin:
+        print("9: Calculator (Admin) - Perform calculations.")
+        print("10: Guessing Game (Admin) - Play a guessing game.")
+        print("11: Admin UI (Admin) - Access the admin interface.")
+
+
+def main():
+    """Main loop for interacting with Cozmo."""
+    global current_expression
+    load_installed_tools()  # Load the installed tools at the start
+
+    while True:
+        draw_face(current_expression)
+        print("\nCommands:")
+        print("1: Happy")
+        print("2: Sad")
+        print("3: Surprised")
+        print("4: Neutral")
+        print("5: Speak")
+        print("6: Ask Cozmo a Question")
+        print("7: Quit")
+        print("8: Random Fun Phrase")
+        print("9: Help")
+
+        if is_admin:
+            print("10: Calculator (Admin)")
+            print("11: Guessing Game (Admin)")
+            print("12: Admin UI (Admin)")
+
+        cmd = input("Enter your choice: ")
+
+        if cmd == "1":
+            current_expression = "happy"
+        elif cmd == "2":
+            current_expression = "sad"
+        elif cmd == "3":
+            current_expression = "surprised"
+        elif cmd == "4":
+            current_expression = "neutral"
+        elif cmd == "5":
+            speak("Hello! I am Cozmo, your AI companion.")
+        elif cmd == "6":
+            answer_question()
+        elif cmd == "7":
+            speak("Goodbye! See you next time!")
+            break
+        elif cmd == "8":
+            random_phrase()
+        elif cmd == "9":
+            display_help()
+        elif cmd == "10" and is_admin:
+            speak("Calculator feature coming soon!")
+        elif cmd == "11" and is_admin:
+            speak("Guessing game feature coming soon!")
+        elif cmd == "12" and is_admin:
+            admin_ui()
+        else:
+            speak("Invalid choice. Try again.")
+        time.sleep(1)
+
+
+# Run the program
+main()
